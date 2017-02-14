@@ -24,17 +24,14 @@
 //
 //-----------------------------------------------------------------------
 
-
-using MrMatrixNet.DemoAdGroupSearch.Core;
-using System;
-using System.Collections.Generic;
-using System.DirectoryServices;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace MrMatrixNet.DemoAdGroupSearch.Engine
 {
+    using System;
+    using System.Collections.Generic;
+    using System.DirectoryServices;
+    using System.Text;
+    using MrMatrixNet.DemoAdGroupSearch.Core;
+
     public class ADFilterSample : IADFilter
     {
         string _directoryPath;

@@ -27,12 +27,12 @@
 
 namespace MrMatrixNet.DemoAdGroupSearch.Engine
 {
-    using MrMatrixNet.DemoAdGroupSearch.Core;
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using MrMatrixNet.DemoAdGroupSearch.Core;
 
     public sealed class QueryResultCoordinator : IDisposable
     {

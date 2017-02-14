@@ -27,11 +27,11 @@
 
 namespace MrMatrixNet.DemoAdGroupSearch.Mocks
 {
-    using MrMatrixNet.DemoAdGroupSearch.Core;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using MrMatrixNet.DemoAdGroupSearch.Core;
 
     public class EmulatedADFilterFactoryMock : IADFilterFactory
     {

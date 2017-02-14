@@ -27,11 +27,11 @@
 
 namespace MrMatrixNet.DemoAdGroupSearch.Tests
 {
+    using System.Threading;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using MrMatrixNet.DemoAdGroupSearch.Core;
     using MrMatrixNet.DemoAdGroupSearch.Engine;
     using MrMatrixNet.DemoAdGroupSearch.Mocks;
-    using System.Threading;
 
     [TestClass]
     public class QueryEngineTest

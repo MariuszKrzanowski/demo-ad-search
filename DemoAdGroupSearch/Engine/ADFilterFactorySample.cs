@@ -24,16 +24,12 @@
 //
 //-----------------------------------------------------------------------
 
-
-using MrMatrixNet.DemoAdGroupSearch.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace MrMatrixNet.DemoAdGroupSearch.Engine
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using MrMatrixNet.DemoAdGroupSearch.Core;
+
     public class ADFilterFactorySample : IADFilterFactory
     {
         private static readonly string[] Zones = new string[]

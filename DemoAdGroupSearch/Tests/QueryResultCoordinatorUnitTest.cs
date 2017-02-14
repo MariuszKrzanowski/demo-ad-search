@@ -26,14 +26,14 @@
 
 namespace MrMatrixNet.DemoAdGroupSearch.Tests
 {
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using MrMatrixNet.DemoAdGroupSearch.Core;
-    using MrMatrixNet.DemoAdGroupSearch.Engine;
-    using MrMatrixNet.DemoAdGroupSearch.Mocks;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using MrMatrixNet.DemoAdGroupSearch.Core;
+    using MrMatrixNet.DemoAdGroupSearch.Engine;
+    using MrMatrixNet.DemoAdGroupSearch.Mocks;
 
 
     [TestClass]

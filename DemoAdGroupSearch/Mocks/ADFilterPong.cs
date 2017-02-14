@@ -27,8 +27,8 @@
 
 namespace MrMatrixNet.DemoAdGroupSearch.Mocks
 {
-    using MrMatrixNet.DemoAdGroupSearch.Core;
     using System.Collections.Generic;
+    using MrMatrixNet.DemoAdGroupSearch.Core;
 
     public class ADFilterPong : IADFilter
     {
