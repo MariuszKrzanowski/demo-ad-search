@@ -24,7 +24,6 @@
 //
 //-----------------------------------------------------------------------
 
-
 namespace MrMatrixNet.DemoAdGroupSearch.Core
 {
     using System.Collections.Generic;
@@ -32,6 +31,7 @@ namespace MrMatrixNet.DemoAdGroupSearch.Core
     public interface IADFilter
     {
         void Resolve(List<string> itemsToDo);
+
         void RegisterResolvedGroupHandler(GroupItemResolved resolvedGroup);
     }
 }

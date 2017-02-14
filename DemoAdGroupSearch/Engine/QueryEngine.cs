@@ -34,23 +34,24 @@ namespace MrMatrixNet.DemoAdGroupSearch.Engine
 
     public sealed class QueryEngine : IDisposable
     {
+        private const int BatchSize = 10;
+
         private ConcurrentQueue<string> _pendingQueue;
         private PendingItemsHandled _handledPendingItems;
         private IADFilter _adFilter;
         private int _handledItemsCounter;
         private int _enqueued;
         private int _dequeued;
-        private const int BatchSize = 10;
 
         private Thread _worker;
-
-        CancellationTokenSource _stopToken;
+        private bool _disposedValue = false;
+        private CancellationTokenSource _stopToken;
         private ManualResetEventSlim _canConsume;
         private SemaphoreSlim _semaphoreSlim;
 
-        public QueryEngine(PendingItemsHandled handledPendingItems,
-            IADFilter adFilter
-            )
+        public QueryEngine(
+            PendingItemsHandled handledPendingItems,
+            IADFilter adFilter)
         {
             _semaphoreSlim = new SemaphoreSlim(1);
             _stopToken = new CancellationTokenSource();
@@ -61,13 +62,30 @@ namespace MrMatrixNet.DemoAdGroupSearch.Engine
 
             _worker = new Thread(this.Run);
             _worker.Start();
+        }
 
+        ~QueryEngine()
+        {
+            Dispose(false);
+        }
+
+        public void Enque(string dn)
+        {
+            Interlocked.Increment(ref _enqueued);
+            _pendingQueue.Enqueue(dn);
+            VerifyIfWorkerHaveSomethingToDo();
         }
 
         public void Stop()
         {
             _stopToken.Cancel();
             _worker.Join();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         private void Run()
@@ -84,13 +102,6 @@ namespace MrMatrixNet.DemoAdGroupSearch.Engine
                     return;
                 }
             }
-        }
-
-        public void Enque(string dn)
-        {
-            Interlocked.Increment(ref _enqueued);
-            _pendingQueue.Enqueue(dn);
-            VerifyIfWorkerHaveSomethingToDo();
         }
 
         private void VerifyIfWorkerHaveSomethingToDo()
@@ -148,7 +159,6 @@ namespace MrMatrixNet.DemoAdGroupSearch.Engine
             }
         }
 
-        private bool _disposedValue = false; 
         private void Dispose(bool disposing)
         {
             if (!_disposedValue)
@@ -159,19 +169,9 @@ namespace MrMatrixNet.DemoAdGroupSearch.Engine
                     _semaphoreSlim.Dispose();
                     _canConsume.Dispose();
                 }
+
                 _disposedValue = true;
             }
-        }
-
-        ~QueryEngine()
-        {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
     }
 }

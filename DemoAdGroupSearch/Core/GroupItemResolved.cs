@@ -24,9 +24,7 @@
 //
 //-----------------------------------------------------------------------
 
-
 namespace MrMatrixNet.DemoAdGroupSearch.Core
 {
     public delegate void GroupItemResolved(ADGroupItem resolvedGroup);
-
 }

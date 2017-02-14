@@ -24,7 +24,6 @@
 //
 //-----------------------------------------------------------------------
 
-
 namespace MrMatrixNet.DemoAdGroupSearch.Core
 {
     using System.Collections.Generic;

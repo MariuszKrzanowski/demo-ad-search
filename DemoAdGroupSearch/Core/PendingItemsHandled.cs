@@ -24,7 +24,6 @@
 //
 //-----------------------------------------------------------------------
 
-
 namespace MrMatrixNet.DemoAdGroupSearch.Core
 {
     public delegate void PendingItemsHandled(int count);

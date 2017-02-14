@@ -24,7 +24,6 @@
 //
 //-----------------------------------------------------------------------
 
-
 namespace MrMatrixNet.DemoAdGroupSearch.Mocks
 {
     using System.Collections.Generic;
@@ -45,7 +44,7 @@ namespace MrMatrixNet.DemoAdGroupSearch.Mocks
 
         public void Resolve(List<string> itemsToDo)
         {
-            itemsToDo.ForEach(item => _resolvedGroup?.Invoke(new ADGroupItem(item,item)));
+            itemsToDo.ForEach(item => _resolvedGroup?.Invoke(new ADGroupItem(item, item)));
         }
     }
 }

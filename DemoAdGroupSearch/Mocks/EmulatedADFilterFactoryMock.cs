@@ -24,7 +24,6 @@
 //
 //-----------------------------------------------------------------------
 
-
 namespace MrMatrixNet.DemoAdGroupSearch.Mocks
 {
     using System;
@@ -35,13 +34,45 @@ namespace MrMatrixNet.DemoAdGroupSearch.Mocks
 
     public class EmulatedADFilterFactoryMock : IADFilterFactory
     {
+        private static readonly ADZone[] AllZones = new ADZone[]
+               {
+                        new ADZone(
+                            new ADGroup("GA1", "GroupA1", "U1", "GC2", "GC4"),
+                            new ADGroup("GA2", "GroupA2", "GB1", "GB2", "GA3", "GC1"),
+                            new ADGroup("GA3", "GroupA3", "GB1", "GC1"),
+                            new ADGroup("GA4", "GroupA4"),
+                            new ADGroup("GA5", "GroupA5", "GA1")),
+                        new ADZone(
+                            new ADGroup("GB1", "GroupB1", "U1"),
+                            new ADGroup("GB2", "GroupB2"),
+                            new ADGroup("GB3", "GroupB3", "GA1"),
+                            new ADGroup("GB4", "GroupB4", "GA3")),
+                        new ADZone(
+                            new ADGroup("GC1", "GroupC1", "GB4"),
+                            new ADGroup("GC2", "GroupC2"),
+                            new ADGroup("GC3", "GroupC3"),
+                            new ADGroup("GC4", "GroupC4", "GA1"),
+                            new ADGroup("GC5", "GroupC5", "UD"),
+                            new ADGroup("GC6", "GroupC6", "UD"))
+               };
+
+        public IEnumerable<IADFilter> TakeFilters(GroupItemResolved resolvedGroup)
+        {
+            return AllZones.Select(zone => FilterBuilder(resolvedGroup, zone));
+        }
+
+        private static ADFilter FilterBuilder(GroupItemResolved resolvedGroup, ADZone zone)
+        {
+            var filter = new ADFilter(zone);
+            filter.RegisterResolvedGroupHandler(resolvedGroup);
+            return filter;
+        }
+
         private class ADGroup
         {
             private string _dn;
             private string _name;
-
             private HashSet<string> _members;
-
 
             public ADGroup(string dn, string name, params string[] members)
             {
@@ -54,12 +85,6 @@ namespace MrMatrixNet.DemoAdGroupSearch.Mocks
                 }
 
                 _members = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            }
-
-
-            public bool Contains(string dn)
-            {
-                return _members.Contains(dn);
             }
 
             public string DistinguishedName
@@ -77,78 +102,43 @@ namespace MrMatrixNet.DemoAdGroupSearch.Mocks
                     return _name;
                 }
             }
+
+            public bool Contains(string dn)
+            {
+                return _members.Contains(dn);
+            }
         }
 
         private class ADZone
         {
-            List<ADGroup> _groups;
+            private List<ADGroup> _groups;
+            private Random _networkLatencyEmulator = new Random();
 
             public ADZone(params ADGroup[] groups)
             {
                 _groups = new List<ADGroup>(groups);
             }
 
-            private Random rnd = new Random();
-
-
             internal IEnumerable<ADGroupItem> FindGroups(string dn)
             {
                 /// Emulation of network latency
-                Thread.Sleep(rnd.Next(4, 12));
+                Thread.Sleep(_networkLatencyEmulator.Next(4, 12));
                 return _groups
                     .Where(group => group.Contains(dn))
                     .Select(group => new ADGroupItem(group.DistinguishedName, group.Name));
             }
         }
 
-        private static readonly ADZone[] AllZones = new ADZone[]
-               {
-                        new ADZone(
-                            new ADGroup("GA1","GroupA1","U1","GC2","GC4"),
-                            new ADGroup("GA2","GroupA2","GB1","GB2","GA3","GC1"),
-                            new ADGroup("GA3","GroupA3","GB1","GC1"),
-                            new ADGroup("GA4","GroupA4"),
-                            new ADGroup("GA5","GroupA5","GA1")
-                            ),
-                        new ADZone(
-                            new ADGroup("GB1","GroupB1","U1"),
-                            new ADGroup("GB2","GroupB2"),
-                            new ADGroup("GB3","GroupB3","GA1"),
-                            new ADGroup("GB4","GroupB4","GA3")
-                            ),
-                        new ADZone(
-                            new ADGroup("GC1","GroupC1","GB4"),
-                            new ADGroup("GC2","GroupC2"),
-                            new ADGroup("GC3","GroupC3"),
-                            new ADGroup("GC4","GroupC4","GA1"),
-                            new ADGroup("GC5","GroupC5","UD"),
-                            new ADGroup("GC6","GroupC6","UD")
-                            )
-               };
-
-
-        public IEnumerable<IADFilter> TakeFilters(GroupItemResolved resolvedGroup)
-        {       
-            return AllZones.Select(zone => FilterBuilder(resolvedGroup, zone));
-        }
-
-        private static ADFilter FilterBuilder(GroupItemResolved resolvedGroup, ADZone zone)
-        {
-            var filter = new ADFilter(zone);
-            filter.RegisterResolvedGroupHandler(resolvedGroup);
-            return filter;
-        }
-
         private class ADFilter : IADFilter
         {
             private GroupItemResolved _resolvedGroup;
-            ADZone _zone;
+            private ADZone _zone;
 
             public ADFilter(ADZone zone)
             {
                 _zone = zone;
             }
-            
+
             public void Resolve(List<string> itemsToDo)
             {
                 itemsToDo.ForEach(

@@ -24,7 +24,6 @@
 //
 //-----------------------------------------------------------------------
 
-
 namespace MrMatrixNet.DemoAdGroupSearch.Tests
 {
     using System.Threading;
@@ -36,8 +35,6 @@ namespace MrMatrixNet.DemoAdGroupSearch.Tests
     [TestClass]
     public class QueryEngineTest
     {
-
-
         [TestMethod]
         public void StartStop()
         {
@@ -104,6 +101,7 @@ namespace MrMatrixNet.DemoAdGroupSearch.Tests
             {
                 System.Threading.Thread.Sleep(0);
             }
+
             queryEngine.Enque("c");
             while (Interlocked.CompareExchange(ref handledItemsCount, 3, 3) == 3)
             {

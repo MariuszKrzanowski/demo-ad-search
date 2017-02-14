@@ -24,7 +24,6 @@
 //
 //-----------------------------------------------------------------------
 
-
 namespace MrMatrixNet.DemoAdGroupSearch.Core
 {
     using System;
@@ -34,16 +33,11 @@ namespace MrMatrixNet.DemoAdGroupSearch.Core
 
     public class AllFoundGroups
     {
-        ConcurrentQueue<ADGroupItem> _resolvedItems;
+        private ConcurrentQueue<ADGroupItem> _resolvedItems;
 
         public AllFoundGroups()
         {
             _resolvedItems = new ConcurrentQueue<ADGroupItem>();
-        }
- 
-        public void Add(ADGroupItem resolvedGroup)
-        {
-            _resolvedItems.Enqueue(resolvedGroup);
         }
 
         public int Count
@@ -54,6 +48,11 @@ namespace MrMatrixNet.DemoAdGroupSearch.Core
             }
         }
 
+        public void Add(ADGroupItem resolvedGroup)
+        {
+            _resolvedItems.Enqueue(resolvedGroup);
+        }
+
         public IEnumerable<ADGroupItem> TakeAll()
         {
             return _resolvedItems;
@@ -61,7 +60,7 @@ namespace MrMatrixNet.DemoAdGroupSearch.Core
 
         public bool ContainsName(string groupName)
         {
-            return _resolvedItems.Any(group=>string.Equals(group.Name, groupName, StringComparison.OrdinalIgnoreCase));
+            return _resolvedItems.Any(group => string.Equals(group.Name, groupName, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

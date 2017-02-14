@@ -35,7 +35,6 @@ namespace MrMatrixNet.DemoAdGroupSearch.Tests
     using MrMatrixNet.DemoAdGroupSearch.Engine;
     using MrMatrixNet.DemoAdGroupSearch.Mocks;
 
-
     [TestClass]
     public class QueryResultCoordinatorUnitTest
     {
@@ -52,31 +51,19 @@ namespace MrMatrixNet.DemoAdGroupSearch.Tests
                     Interlocked.Increment(ref counter);
                 }
             });
-
-
+     
             Assert.AreEqual(1, counter);
         }
 
-
-        public class EmptyADFilterFactoryMock : IADFilterFactory
-        {
-            public IEnumerable<IADFilter> TakeFilters(GroupItemResolved resolvedGroup)
-            {
-                return new IADFilter[0];
-            }
-        }
-        
-
-        [TestMethod()]
+        [TestMethod]
         public void WhenNoZonesStopProcessing()
         {
-
             var qrc = new QueryResultCoordinator(new EmptyADFilterFactoryMock());
             var allGroups = qrc.FindAllGroups("U1");
             Assert.AreEqual(0, allGroups.Count);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void WhenUserHaveNoGroupReturnEmptySet()
         {
             var qrc = new QueryResultCoordinator(new EmulatedADFilterFactoryMock());
@@ -84,7 +71,7 @@ namespace MrMatrixNet.DemoAdGroupSearch.Tests
             Assert.AreEqual(0, allGroups.Count);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void WhenUserHaveDirectGroupOnlyReturnThem()
         {
             var qrc = new QueryResultCoordinator(new EmulatedADFilterFactoryMock());
@@ -92,7 +79,7 @@ namespace MrMatrixNet.DemoAdGroupSearch.Tests
             Assert.AreEqual(2, allGroups.Count);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void WhenUserHaveIndrectGroupReturnThem()
         {
             var qrc = new QueryResultCoordinator(new EmulatedADFilterFactoryMock());
@@ -100,5 +87,12 @@ namespace MrMatrixNet.DemoAdGroupSearch.Tests
             Assert.AreEqual(9, allGroups.Count);
         }
 
+        private class EmptyADFilterFactoryMock : IADFilterFactory
+        {
+            public IEnumerable<IADFilter> TakeFilters(GroupItemResolved resolvedGroup)
+            {
+                return new IADFilter[0];
+            }
+        }
     }
 }

@@ -46,7 +46,9 @@ namespace MrMatrixNet.DemoAdGroupSearch.Engine
 
         private static ADFilterSample BuildADFilter(GroupItemResolved resolvedGroup, string zone)
         {
-            var adf = new ADFilterSample(zone); adf.RegisterResolvedGroupHandler(resolvedGroup); return adf;
+            var adFilter = new ADFilterSample(zone);
+            adFilter.RegisterResolvedGroupHandler(resolvedGroup);
+            return adFilter;
         }
     }
 }

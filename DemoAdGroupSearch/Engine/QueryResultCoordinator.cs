@@ -24,7 +24,6 @@
 //
 //-----------------------------------------------------------------------
 
-
 namespace MrMatrixNet.DemoAdGroupSearch.Engine
 {
     using System;
@@ -42,16 +41,38 @@ namespace MrMatrixNet.DemoAdGroupSearch.Engine
         private int _handledPendingDistinguishedNamesCount;
         private int _pendingDistinguishedNamesCount;
         private ManualResetEvent _allDataRetrieved;
+        private bool _disposedValue = false;
 
         public QueryResultCoordinator(IADFilterFactory adFilterFactory)
         {
             _distingushedName = new ConcurrentDictionary<string, string>();
             _allFoundGroups = new AllFoundGroups();
-            _queryEngines=adFilterFactory
+            _queryEngines = adFilterFactory
                 .TakeFilters(this.ResolvedGroup)
                 .Select(filter => new QueryEngine(this.HandledPendingItem, filter))
                 .ToList();
             _allDataRetrieved = new ManualResetEvent(false);
+        }
+
+        ~QueryResultCoordinator()
+        {
+            Dispose(false);
+        }
+        
+        public AllFoundGroups FindAllGroups(string userDistinguishedName)
+        {
+            Interlocked.Add(ref _pendingDistinguishedNamesCount, _queryEngines.Count);
+            _queryEngines.ForEach(engine => engine.Enque(userDistinguishedName));
+            RunStopTestCondition();
+            _allDataRetrieved.WaitOne();
+            _queryEngines.ForEach(engine => engine.Stop());
+            return _allFoundGroups;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         private void HandledPendingItem(int count)
@@ -70,7 +91,7 @@ namespace MrMatrixNet.DemoAdGroupSearch.Engine
 
         private void ResolvedGroup(ADGroupItem resolvedGroupItem)
         {
-            if(_distingushedName.TryAdd(resolvedGroupItem.DistinguishedName,resolvedGroupItem.DistinguishedName))
+            if (_distingushedName.TryAdd(resolvedGroupItem.DistinguishedName, resolvedGroupItem.DistinguishedName))
             {
                 Interlocked.Add(ref _pendingDistinguishedNamesCount, _queryEngines.Count);
                 _queryEngines.ForEach(engine => engine.Enque(resolvedGroupItem.DistinguishedName));
@@ -78,19 +99,6 @@ namespace MrMatrixNet.DemoAdGroupSearch.Engine
                 RunStopTestCondition();
             }
         }
-
-        public AllFoundGroups FindAllGroups(string userDistinguishedName)
-        {
-            Interlocked.Add(ref _pendingDistinguishedNamesCount, _queryEngines.Count);
-            _queryEngines.ForEach(engine => engine.Enque(userDistinguishedName));
-            RunStopTestCondition();
-            _allDataRetrieved.WaitOne();
-            _queryEngines.ForEach(engine => engine.Stop());
-            return _allFoundGroups;
-        }
-
-        
-        private bool _disposedValue = false;
 
         private void Dispose(bool disposing)
         {
@@ -100,20 +108,9 @@ namespace MrMatrixNet.DemoAdGroupSearch.Engine
                 {
                     _allDataRetrieved.Dispose();
                 }
+
                 _disposedValue = true;
             }
         }
-
-        ~QueryResultCoordinator()
-        {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        
     }
 }

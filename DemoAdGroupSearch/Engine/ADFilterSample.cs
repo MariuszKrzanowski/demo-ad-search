@@ -34,17 +34,21 @@ namespace MrMatrixNet.DemoAdGroupSearch.Engine
 
     public class ADFilterSample : IADFilter
     {
-        string _directoryPath;
-        GroupItemResolved _resolvedGroup;
-
         private const string DistingushedName = "dn";
         private const string Name = "name";
         private const string Member = "member";
+        private static readonly string[] PropertiesToLoad = new string[]
+        {
+            DistingushedName,
+            Name
+        };
+
+        private string _directoryPath;
+        private GroupItemResolved _resolvedGroup;
 
         public ADFilterSample(string directoryPath)
         {
             _directoryPath = directoryPath;
-
         }
 
         public void RegisterResolvedGroupHandler(GroupItemResolved resolvedGroup)
@@ -59,16 +63,9 @@ namespace MrMatrixNet.DemoAdGroupSearch.Engine
                 return;
             }
 
-
-
             using (DirectoryEntry de = new DirectoryEntry(_directoryPath))
             {
-                using (DirectorySearcher ds
-                    = new DirectorySearcher(de,
-                    BuilFilter(itemsToDo), new string[] {
-                        DistingushedName,
-                        Name
-                    }))
+                using (DirectorySearcher ds = new DirectorySearcher(de, BuilFilter(itemsToDo), PropertiesToLoad))
                 {
                     ds.Asynchronous = true;
                     ds.PageSize = 100;
@@ -87,8 +84,6 @@ namespace MrMatrixNet.DemoAdGroupSearch.Engine
                         _resolvedGroup(new ADGroupItem(dn, name));
                     }
                 }
-
-
             }
         }
 
@@ -116,8 +111,8 @@ namespace MrMatrixNet.DemoAdGroupSearch.Engine
                     sb.Append("=");
                     sb.Append(item);
                     sb.Append(")");
-
                 }
+
                 sb.Append(")");
             }
 
