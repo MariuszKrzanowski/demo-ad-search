@@ -38,23 +38,36 @@ namespace MrMatrixNet.DemoAdGroupSearch.Tests
     [TestClass]
     public class QueryResultCoordinatorUnitTest
     {
+        /// <summary>
+        /// This test method is added to prove that dictionary TryAdd is atomic.
+        /// </summary>
         [TestMethod]
         public void SampleOfUsageConcurentDictionaryInstedOfHashSetAsParallel()
         {
             ConcurrentDictionary<string, string> dict = new ConcurrentDictionary<string, string>();
             int counter = 0;
 
-            (new int[] { 1, 2, 3 }).ToList().AsParallel().ForAll(i =>
+            List<int> arrayList = new List<int>();
+            for (int i = 0; i < 10000; i++)
+            {
+                arrayList.Add(i);
+            }
+
+            arrayList.AsParallel().ForAll(i =>
             {
                 if (dict.TryAdd("1", "1"))
                 {
                     Interlocked.Increment(ref counter);
                 }
             });
-     
+
             Assert.AreEqual(1, counter);
         }
 
+        /// <summary>
+        /// Test when AD structure is empty. 
+        /// Used to verify if QueryResultCoordinator finish work.
+        /// </summary>
         [TestMethod]
         public void WhenNoZonesStopProcessing()
         {
@@ -63,6 +76,9 @@ namespace MrMatrixNet.DemoAdGroupSearch.Tests
             Assert.AreEqual(0, allGroups.Count);
         }
 
+        /// <summary>
+        /// When AD structure exists, but user is not assigned to any group, return empty set.
+        /// </summary>
         [TestMethod]
         public void WhenUserHaveNoGroupReturnEmptySet()
         {

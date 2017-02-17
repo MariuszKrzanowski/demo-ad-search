@@ -63,6 +63,7 @@
     <Compile Include="Core\IADFilterFactory.cs" />
     <Compile Include="Core\AllFoundGroups.cs" />
     <Compile Include="Engine\QueryEngine.cs" />
+    <Compile Include="Tests\ADFilterSampleTest.cs" />
     <Compile Include="Tests\QueryEngineTest.cs" />
     <Compile Include="Engine\QueryResultCoordinator.cs" />
     <Compile Include="Core\GroupItemResolved.cs" />

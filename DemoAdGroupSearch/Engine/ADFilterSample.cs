@@ -51,6 +51,43 @@ namespace MrMatrixNet.DemoAdGroupSearch.Engine
             _directoryPath = directoryPath;
         }
 
+        public static string BuildGroupFilter(List<string> itemsToDo)
+        {
+            if (0 == itemsToDo.Count)
+            {
+                throw new ArgumentException(nameof(itemsToDo));
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append("(&(objectClass=group)");
+
+            if (itemsToDo.Count == 1)
+            {
+                sb.Append("(");
+                sb.Append(Member);
+                sb.Append("=");
+                sb.Append(itemsToDo[0]);
+                sb.Append(")");
+            }
+            else
+            {
+                sb.Append("(|");
+                foreach (string item in itemsToDo)
+                {
+                    sb.Append("(");
+                    sb.Append(Member);
+                    sb.Append("=");
+                    sb.Append(item);
+                    sb.Append(")");
+                }
+
+                sb.Append(")");
+            }
+
+            sb.Append(")");
+            return sb.ToString();
+        }
+
         public void RegisterResolvedGroupHandler(GroupItemResolved resolvedGroup)
         {
             _resolvedGroup = resolvedGroup;
@@ -65,7 +102,7 @@ namespace MrMatrixNet.DemoAdGroupSearch.Engine
 
             using (DirectoryEntry de = new DirectoryEntry(_directoryPath))
             {
-                using (DirectorySearcher ds = new DirectorySearcher(de, BuilFilter(itemsToDo), PropertiesToLoad))
+                using (DirectorySearcher ds = new DirectorySearcher(de, BuildGroupFilter(itemsToDo), PropertiesToLoad))
                 {
                     ds.Asynchronous = true;
                     ds.PageSize = 100;
@@ -85,39 +122,6 @@ namespace MrMatrixNet.DemoAdGroupSearch.Engine
                     }
                 }
             }
-        }
-
-        private string BuilFilter(List<string> itemsToDo)
-        {
-            if (0 == itemsToDo.Count)
-            {
-                throw new ArgumentException(nameof(itemsToDo));
-            }
-
-            StringBuilder sb = new StringBuilder();
-            sb.Append("(&(objectClass=group)");
-
-            if (itemsToDo.Count == 1)
-            {
-                return string.Concat("(", Member, "=", itemsToDo[0], ")");
-            }
-            else
-            {
-                sb.Append("(|");
-                foreach (string item in itemsToDo)
-                {
-                    sb.Append("(");
-                    sb.Append(Member);
-                    sb.Append("=");
-                    sb.Append(item);
-                    sb.Append(")");
-                }
-
-                sb.Append(")");
-            }
-
-            sb.Append(")");
-            return sb.ToString();
         }
     }
 }
